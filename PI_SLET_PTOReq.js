@@ -43,7 +43,7 @@ function ptoRequest(request, response) {
 		//var colEndDate = slPTO.addField('custlist_to', 'date', 'To:').setMandatory(true);
 		var colHrs = slPTO.addField('custlist_hours', 'float', 'Hours').setMandatory(true);
 		var colDescription = slPTO.addField('custlist_des', 'textarea', 'Description').setMandatory(true);
-		var colTimeItem = slPTO.addField('custlist_timeitem', 'select', 'Time Item', 'customlist_timeitems').setMandatory(true);
+		var colTimeItem = slPTO.addField('custlist_timeitem', 'select', 'Time Item', 'customlist_pi_time_items').setMandatory(true);
 		
 		frmPTO.addSubmitButton('Submit Request');
 		
