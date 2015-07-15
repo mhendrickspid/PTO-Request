@@ -29,8 +29,7 @@ function ptoAction() {
 			nlapiSubmitField('employee', employeeId, 'custentity_pi_pto_hrs', newHrs);
 		}
 	} catch (e) {
-		nlapiLogExecution('ERROR', 'Unexpected PTO Error', e.toString());
+		nlapiLogExecution('ERROR', 'PTO Hours Calculation', e.toString());
 		throw (e);
 	}
-	
 }
