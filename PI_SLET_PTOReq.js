@@ -14,7 +14,7 @@
 function ptoRequest(request, response) {
 	if (request.getMethod() == 'GET') {
 		
-		
+		//Search existing
 		var searchResults = nlapiSearchRecord('customrecord_pi_pto_request', 'customsearch_pi_mypendingrequests');
 		
 		var frmPTO = nlapiCreateForm('Request Time Off', false); // create form
@@ -35,7 +35,12 @@ function ptoRequest(request, response) {
 		// add select options to payroll item type
 		
 		// set field defaults & display types
-		fldOpenCount.setDefaultValue(searchResults.length);
+		if (searchResults.length > 0) {
+			fldOpenCount.setDefaultValue(searchResults.length);
+		} else {
+			fldOpenCount.setDefaultValue(0);
+		}
+		
 		fldOpenCount.setDisplayType('inline');
 		fldEmployee.setDefaultValue(userId);
 		fldEmployee.setDisplayType('inline');
@@ -56,13 +61,13 @@ function ptoRequest(request, response) {
 		var colStartDate = slPTO.addField('custlist_start', 'date', 'Start:').setMandatory(true);
 		var colEndDate = slPTO.addField('custlist_end', 'date', 'End:').setMandatory(true);
 		var colHrs = slPTO.addField('custlist_hours', 'float', 'Hours').setMandatory(true);
-		var colDescription = slPTO.addField('custlist_description', 'textarea', 'Description').setMandatory(true);
 		var colTimeItem = slPTO.addField('custlist_timeitem', 'select', 'Time Item', 'customlist_pi_time_items').setMandatory(true);
-		
-		frmPTO.setScript('customscript_pi_cs_timeoff');
+		var colDescription = slPTO.addField('custlist_description', 'textarea', 'Description').setMandatory(true);
 		
 		frmPTO.addSubmitButton('Submit Request');
 		
+		// set client script to auto calculate hours
+		frmPTO.setScript('customscript_pi_cs_timeoff');
 		response.writePage(frmPTO);		
 		
 	} else if (request.getMethod() == 'POST') {//test
@@ -75,35 +80,37 @@ function ptoRequest(request, response) {
 		// create custom records		
 		var timeListCount = request.getLineItemCount('custpage_timelist');
 		
+		if (timeListCount > 0) {
 		
-		for (var i = 1; i <= timeListCount; i++) {
-			
-			// Get Field values from each line item
-			var dteStart = request.getLineItemValue('custpage_timelist', 'custlist_from', i);
-			var dteEnd = request.getLineItemValue('custpage_timelist', 'custlist_start', i);
-			var stHours = request.getLineItemValue('custpage_timelist', 'custlist_hours', i);
-			var stTimeItem = request.getLineItemValue('custpage_timelist', 'custlist_timeitem', i);
-			var stDescription = request.getLineItemValue('custpage_timelist', 'custlist_description', i);
-			
-			// Create Custom record
-			var recTimeReq = nlapiCreateRecord('customrecord_pi_pto_request');
-			
-			// some Generate the pto request record & populate fields
-			recTimeReq.setFieldValue('custrecord_employee', stEmployeeId);
-			recTimeReq.setFieldValue('custrecord_supervisor', stSupervisor);
-			recTimeReq.setFieldValue('custrecord_status', 1);
-			recTimeReq.setFieldValue('custrecord_start', dteStart);
-			recTimeReq.setFieldValue('custrecord_end', dteEnd);
-			recTimeReq.setFieldValue('custrecord_hours', stHours);
-			recTimeReq.setFieldValue('custrecord_description', stDescription);
-			recTimeReq.setFieldValue('custrecord_time_item', stTimeItem);
-			recTimeReq.setFieldValue('custrecord_subsidiary', stSubsidiary);
-			recTimeReq.setFieldValue('custrecord_department', stDepartment);
-			
-			// Submit PTO Request Record
-			nlapiSubmitRecord(recTimeReq);
+			for (var i = 1; i <= timeListCount; i++) {
+				
+				// Get Field values from each line item
+				var dteStart = request.getLineItemValue('custpage_timelist', 'custlist_from', i);
+				var dteEnd = request.getLineItemValue('custpage_timelist', 'custlist_start', i);
+				var stHours = request.getLineItemValue('custpage_timelist', 'custlist_hours', i);
+				var stTimeItem = request.getLineItemValue('custpage_timelist', 'custlist_timeitem', i);
+				var stDescription = request.getLineItemValue('custpage_timelist', 'custlist_description', i);
+				
+				// Create Custom record
+				var recTimeReq = nlapiCreateRecord('customrecord_pi_pto_request');
+				
+				// some Generate the pto request record & populate fields
+				recTimeReq.setFieldValue('custrecord_employee', stEmployeeId);
+				recTimeReq.setFieldValue('custrecord_supervisor', stSupervisor);
+				recTimeReq.setFieldValue('custrecord_status', 1);
+				recTimeReq.setFieldValue('custrecord_start', dteStart);
+				recTimeReq.setFieldValue('custrecord_end', dteEnd);
+				recTimeReq.setFieldValue('custrecord_hours', stHours);
+				recTimeReq.setFieldValue('custrecord_description', stDescription);
+				recTimeReq.setFieldValue('custrecord_time_item', stTimeItem);
+				recTimeReq.setFieldValue('custrecord_subsidiary', stSubsidiary);
+				recTimeReq.setFieldValue('custrecord_department', stDepartment);
+				
+				// Submit PTO Request Record
+				nlapiSubmitRecord(recTimeReq);
+			}
+			// Redirect the user back to the suitelet page.
+			nlapiSetRedirectURL('SUITELET', 'customscript_pi_slet_ptoreq', 'customdeploy_pi_slet_ptoreq');
 		}
-		// Redirect the user back to the suitelet page.
-		nlapiSetRedirectURL('SUITELET', 'customscript_pi_slet_ptoreq', 'customdeploy_pi_slet_ptoreq');
 	}
 }

@@ -28,7 +28,7 @@ var TimeOff = {
 			var stEnd = nlapiGetCurrentLineItemValue(type, 'custlist_end');
 			var dteEnd = nlapiStringToDate(stEnd, 'mm/dd/yyyy');
 			
-			//calculate workday hours
+			// Calculate workday hours. Note that this currently does not exclude weekends
 			if (stStart != '' && stEnd != '') {
 				var inthours = ((dteEnd - dteStart)/3600000) + 24;
 				var intWorkDays = inthours / 24;
