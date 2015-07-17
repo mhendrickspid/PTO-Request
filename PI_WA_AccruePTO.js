@@ -1,5 +1,6 @@
 /**
  * Module Description
+ * 
  * Custom workflow action in the PTO Request workflow.
  * When a request is approved, decrease the PTO accrued hours by
  * the amount requested.
