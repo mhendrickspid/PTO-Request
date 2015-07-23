@@ -20,6 +20,8 @@
 var TimeOff = {
 
     // Field changed event
+		/*
+		 
     timeOff_fieldChanged: function(type, name, linenum) {
         if (type == 'custpage_timelist' && (name == 'custlist_start' || name == 'custlist_end')) {
             var stStart = nlapiGetCurrentLineItemValue(type, 'custlist_start'),
@@ -35,5 +37,15 @@ var TimeOff = {
                 nlapiSetCurrentLineItemValue(type, 'custlist_hours', intWorkHrs, false, true);
             }
         }
-    }
+    },
+    */
+	
+    // Page init function to set the first line start date to today's date
+	pi_setline: function() {
+		var today = new Date();
+		var stToday = nlapiDateToString(today, 'mm/dd/yyyy');
+		
+		nlapiSelectNewLineItem('custpage_timelist');
+		nlapiSetCurrentLineItemValue('custpage_timelist', 'custlist_start', stToday, false, true);
+	}
 };
