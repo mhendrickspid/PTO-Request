@@ -91,6 +91,8 @@ function ptoRequest(request, response) {
             colHrs = slPTO.addField('custlist_hours', 'float', 'Hours').setMandatory(true),
             colTimeItem = slPTO.addField('custlist_timeitem', 'select', 'Time Item', null).setMandatory(true),
             colDescription = slPTO.addField('custlist_description', 'textarea', 'Description').setMandatory(true);
+        
+        colTimeItem.addSelectOption(null, '',true);
 
         frmPTO.addSubmitButton('Submit Request(s)');
         // loop through time item search and add select options to the time item field
@@ -147,7 +149,6 @@ function ptoRequest(request, response) {
             }
             // Redirect the user back to the suitelet page.
             nlapiSetRedirectURL('SUITELET', 'customscript_pi_slet_ptoreq', 'customdeploy_pi_slet_ptoreq');
-
         }
     }
 }

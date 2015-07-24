@@ -47,5 +47,68 @@ var TimeOff = {
 		
 		nlapiSelectNewLineItem('custpage_timelist');
 		nlapiSetCurrentLineItemValue('custpage_timelist', 'custlist_start', stToday, false, true);
-	}
+	},
+	// if the hours entered exceeds available hours, alert the user and refuse the line
+	pi_validateLine: function(type) {
+		if (type == 'custpage_timelist') {
+			var stTimeItem = nlapiGetCurrentLineItemText(type, 'custlist_timeitem');
+			var intHours = nlapiGetCurrentLineItemValue(type, 'custlist_hours');
+			var employeeId = nlapiGetUser();
+			var isValid;
+			
+			//get the time item
+			var vacation = 'Vacation',
+			 	pingbalance = 'PingBalance PTO',
+			 	sicktime = 'Sick Time',
+			 	volunteertime = 'Volunteer Time',
+			 	parentalleave = 'Parental Leave',
+			 	unpaidtime = 'Unpaid Time',
+				floating = 'Floating Holiday';
+			
+			// Adjust the time item to look up the appropriate field on the employee
+			switch (stTimeItem) {
+			case vacation || pingbalance:
+				var stTimeField = 'custentity_pi_pto_hrs';
+				isValid = this.validateHours(stTimeField, intHours, employeeId);
+				break;		
+			case sicktime:
+				var stTimeField = 'custentity_pi_sicktime';
+				isValid = this.validateHours(stTimeField, intHours, employeeId);
+				break;
+			case volunteertime:
+				var stTimeField = 'custentity_pi_volunteer_time';
+				isValid = this.validateHours(stTimeField, intHours, employeeId);
+				break;
+			case parentalleave:
+				var stTimeField = 'custentity_pi_parental_leave';
+				isValid = this.validateHours(stTimeField, intHours, employeeId);
+				break;
+			case unpaidtime:
+				var stTimeField = 'custentity_pi_pto_hrs';
+				isValid = this.validateHours(stTimeField, intHours, employeeId);
+				break;
+			case floating:
+				var stTimeField = 'custentity_pi_floatingholiday';
+				isValid = this.validateHours(stTimeField, intHours, employeeId);
+				break;
+			}
+		}
+		if (isValid == 'F') {
+			return false;
+		} else {
+			return true;
+		}
+	},
+	
+	validateHours: function validateHours(stTimeField, intHours, employeeId) {
+		var currentHours = parseFloat(nlapiLookupField('employee', employeeId, stTimeField)).toFixed(2);
+		var x;
+		if (parseFloat(intHours) > currentHours) {
+			alert(intHours + ' Exceeds your remaining balance: ' + currentHours);
+			x = 'F';
+		} else {
+			x = 'T';
+		} 
+		return x;
+	}		
 };
